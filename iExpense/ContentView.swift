@@ -7,30 +7,32 @@
 
 import SwiftUI
 
-struct SecondView: View {
-    @Environment(\.dismiss) var dismiss
+struct ContentView: View {
+    
+    @StateObject var expenses = Expenses()
     
     var body: some View {
-        VStack {
-            Text("Second View")
-            Button("Dismiss") {
-                dismiss()
+        NavigationView {
+            List {
+                ForEach(expenses.items, id: \.name) { item in
+                    Text(item.name)
+                }
+                .onDelete(perform: removeItems)
+            }
+            .navigationTitle("iExpense")
+            .toolbar {
+                Button {
+                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
+                    expenses.items.append(expense)
+                } label: {
+                    Image(systemName: "plus")
+                }
             }
         }
-        
     }
-}
-
-struct ContentView: View {
-    @State private var showingSheet = false
     
-    var body: some View {
-        Button("Show Second View") {
-            showingSheet.toggle()
-        }
-        .sheet(isPresented: $showingSheet) {
-            SecondView()
-        }
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
     }
 }
 
